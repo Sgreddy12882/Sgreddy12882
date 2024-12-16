@@ -1,203 +1,110 @@
+import math
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Weather Prediction</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            padding: 20px;
-            background-color: #f0f8ff;
-        }
-        .container {
-            max-width: 600px;
-            margin: auto;
-            padding: 20px;
-            background: #ffffff;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
-        .hidden {
-            display: none;
-        }
-        .result {
-            margin-top: 20px;
-            padding: 10px;
-            background: #e6f7ff;
-            border-left: 4px solid #2196f3;
-        }
-        .error {
-            background: #ffe6e6;
-            border-left: 4px solid #f44336;
-        }
-        textarea {
-            width: 100%;
-            height: 100px;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h1>Weather Prediction</h1>
-        <p>Select an option to proceed:</p>
-        <select id="methodSelector">
-            <option value="hardcoded">1: Hard-Coding Variables</option>
-            <option value="keyboard">2: Keyboard Input</option>
-            <option value="file">3: Read from a File</option>
-            <option value="single">4: Single Set of Inputs</option>
-            <option value="multiple">5: Multiple Sets of Inputs</option>
-        </select>
+def calculate_weather_index(temperature, humidity, wind_speed):
+    return (0.5 * math.pow(temperature, 2)) - (0.2 * humidity) + (0.1 * wind_speed) - 15
 
-        <!-- Hardcoded Variables -->
-        <div id="hardcodedSection" class="hidden">
-            <h2>Hard-Coding Variables</h2>
-            <p>Solving for hardcoded values: Temperature = 25°C, Humidity = 50%, Wind Speed = 10 km/h.</p>
-            <button onclick="solveHardcoded()">Predict</button>
-            <div id="hardcodedResult"></div>
-        </div>
+def classify_weather(index):
+    if index > 25:
+        return "Sunny"
+    elif index > 15:
+        return "Cloudy"
+    elif index > 5:
+        return "Rainy"
+    elif index > -5:
+        return "Stormy"
+    else:
+        return "Snow"
 
-        <!-- Keyboard Input -->
-        <div id="keyboardSection" class="hidden">
-            <h2>Keyboard Input</h2>
-            <form id="keyboardForm">
-                <label for="temperature">Temperature (°C):</label><br>
-                <input type="number" id="keyboardTemperature" required><br>
-                <label for="humidity">Humidity (%):</label><br>
-                <input type="number" id="keyboardHumidity" required><br>
-                <label for="windSpeed">Wind Speed (km/h):</label><br>
-                <input type="number" id="keyboardWindSpeed" required><br>
-                <button type="submit">Predict</button>
-            </form>
-            <div id="keyboardResult"></div>
-        </div>
+def solve_hardcoded():
+    print("\nHard-Coded Variables")
+    temperature, humidity, wind_speed = 25, 50, 10
+    index = calculate_weather_index(temperature, humidity, wind_speed)
+    category = classify_weather(index)
+    print(f"Weather Index: {index:.2f}")
+    print(f"Weather Category: {category}\n")
 
-        <!-- File Input -->
-        <div id="fileSection" class="hidden">
-            <h2>Read from a File</h2>
-            <input type="file" id="fileInput"><br>
-            <button onclick="solveFromFile()">Predict</button>
-            <div id="fileResult"></div>
-        </div>
+def solve_keyboard_input():
+    print("\nKeyboard Input")
+    temperature = float(input("Enter Temperature (°C): "))
+    humidity = float(input("Enter Humidity (%): "))
+    wind_speed = float(input("Enter Wind Speed (km/h): "))
+    index = calculate_weather_index(temperature, humidity, wind_speed)
+    category = classify_weather(index)
+    print(f"Weather Index: {index:.2f}")
+    print(f"Weather Category: {category}\n")
 
-        <!-- Single Set of Inputs -->
-        <div id="singleSection" class="hidden">
-            <h2>Single Set of Inputs</h2>
-            <form id="singleForm">
-                <label for="temperature">Temperature (°C):</label><br>
-                <input type="number" id="singleTemperature" required><br>
-                <label for="humidity">Humidity (%):</label><br>
-                <input type="number" id="singleHumidity" required><br>
-                <label for="windSpeed">Wind Speed (km/h):</label><br>
-                <input type="number" id="singleWindSpeed" required><br>
-                <button type="submit">Predict</button>
-            </form>
-            <div id="singleResult"></div>
-        </div>
+def solve_file_input():
+    print("\nFile Input")
+    file_path = input("Enter the file path: ")
+    try:
+        with open(file_path, "r") as file:
+            lines = file.readlines()
+            for line_num, line in enumerate(lines, start=1):
+                try:
+                    temperature, humidity, wind_speed = map(float, line.strip().split(","))
+                    index = calculate_weather_index(temperature, humidity, wind_speed)
+                    category = classify_weather(index)
+                    print(f"Line {line_num}: Weather Index: {index:.2f}, Weather Category: {category}")
+                except ValueError:
+                    print(f"Line {line_num}: Invalid input: {line.strip()}")
+    except FileNotFoundError:
+        print("File not found. Please check the file path.")
 
-        <!-- Multiple Sets of Inputs -->
-        <div id="multipleSection" class="hidden">
-            <h2>Multiple Sets of Inputs</h2>
-            <textarea id="multipleInput" placeholder="Enter sets of Temperature, Humidity, Wind Speed values, one per line (e.g., 25,50,10)"></textarea><br>
-            <button onclick="solveMultiple()">Predict</button>
-            <div id="multipleResult"></div>
-        </div>
-    </div>
+def solve_single_input():
+    print("\nSingle Input")
+    temperature = float(input("Enter Temperature (°C): "))
+    humidity = float(input("Enter Humidity (%): "))
+    wind_speed = float(input("Enter Wind Speed (km/h): "))
+    index = calculate_weather_index(temperature, humidity, wind_speed)
+    category = classify_weather(index)
+    print(f"Weather Index: {index:.2f}")
+    print(f"Weather Category: {category}\n")
 
-    <script>
-        const sections = {
-            hardcoded: document.getElementById("hardcodedSection"),
-            keyboard: document.getElementById("keyboardSection"),
-            file: document.getElementById("fileSection"),
-            single: document.getElementById("singleSection"),
-            multiple: document.getElementById("multipleSection")
-        };
+def solve_multiple_inputs():
+    print("\nMultiple Inputs")
+    print("Enter multiple sets of Temperature, Humidity, Wind Speed values (comma-separated), one per line. Type 'END' to finish.")
+    inputs = []
+    while True:
+        line = input()
+        if line.strip().upper() == "END":
+            break
+        inputs.append(line)
 
-        document.getElementById("methodSelector").addEventListener("change", (event) => {
-            Object.values(sections).forEach(section => section.classList.add("hidden"));
-            const selected = event.target.value;
-            if (sections[selected]) sections[selected].classList.remove("hidden");
-        });
+    for line_num, line in enumerate(inputs, start=1):
+        try:
+            temperature, humidity, wind_speed = map(float, line.strip().split(","))
+            index = calculate_weather_index(temperature, humidity, wind_speed)
+            category = classify_weather(index)
+            print(f"Set {line_num}: Weather Index: {index:.2f}, Weather Category: {category}")
+        except ValueError:
+            print(f"Set {line_num}: Invalid input: {line.strip()}")
 
-        function calculateWeatherIndex(T, H, W) {
-            return (0.5 * Math.pow(T, 2)) - (0.2 * H) + (0.1 * W) - 15;
-        }
+def main():
+    while True:
+        print("\nWeather Prediction Options:")
+        print("1: Hard-Coded Variables")
+        print("2: Keyboard Input")
+        print("3: Read from a File")
+        print("4: Single Set of Inputs")
+        print("5: Multiple Sets of Inputs")
+        print("6: Exit")
+        
+        choice = input("Select an option (1-6): ")
+        if choice == "1":
+            solve_hardcoded()
+        elif choice == "2":
+            solve_keyboard_input()
+        elif choice == "3":
+            solve_file_input()
+        elif choice == "4":
+            solve_single_input()
+        elif choice == "5":
+            solve_multiple_inputs()
+        elif choice == "6":
+            print("Exiting the program.")
+            break
+        else:
+            print("Invalid choice. Please select a valid option.")
 
-        function classifyWeather(index) {
-            if (index > 25) return "Sunny";
-            if (index > 15) return "Cloudy";
-            if (index > 5) return "Rainy";
-            if (index > -5) return "Stormy";
-            return "Snow";
-        }
-
-        function solveHardcoded() {
-            const index = calculateWeatherIndex(25, 50, 10);
-            const category = classifyWeather(index);
-            document.getElementById("hardcodedResult").innerHTML = `<div class="result"><strong>Weather Index:</strong> ${index.toFixed(2)}<br><strong>Weather Category:</strong> ${category}</div>`;
-        }
-
-        document.getElementById("keyboardForm").addEventListener("submit", function(event) {
-            event.preventDefault();
-            const T = parseFloat(document.getElementById("keyboardTemperature").value);
-            const H = parseFloat(document.getElementById("keyboardHumidity").value);
-            const W = parseFloat(document.getElementById("keyboardWindSpeed").value);
-            const index = calculateWeatherIndex(T, H, W);
-            const category = classifyWeather(index);
-            document.getElementById("keyboardResult").innerHTML = `<div class="result"><strong>Weather Index:</strong> ${index.toFixed(2)}<br><strong>Weather Category:</strong> ${category}</div>`;
-        });
-
-        function solveFromFile() {
-            const file = document.getElementById("fileInput").files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = function(event) {
-                const lines = event.target.result.split("\n").filter(line => line.trim());
-                let output = "";
-                lines.forEach((line, index) => {
-                    const [T, H, W] = line.split(",").map(Number);
-                    if (isNaN(T) || isNaN(H) || isNaN(W)) {
-                        output += `<div class="error">Invalid input on line ${index + 1}: ${line}</div>`;
-                    } else {
-                        const index = calculateWeatherIndex(T, H, W);
-                        const category = classifyWeather(index);
-                        output += `<div class="result">Line ${index + 1}: <strong>Weather Index:</strong> ${index.toFixed(2)}, <strong>Weather Category:</strong> ${category}</div>`;
-                    }
-                });
-                document.getElementById("fileResult").innerHTML = output;
-            };
-            reader.readAsText(file);
-        }
-
-        document.getElementById("singleForm").addEventListener("submit", function(event) {
-            event.preventDefault();
-            const T = parseFloat(document.getElementById("singleTemperature").value);
-            const H = parseFloat(document.getElementById("singleHumidity").value);
-            const W = parseFloat(document.getElementById("singleWindSpeed").value);
-            const index = calculateWeatherIndex(T, H, W);
-            const category = classifyWeather(index);
-            document.getElementById("singleResult").innerHTML = `<div class="result"><strong>Weather Index:</strong> ${index.toFixed(2)}<br><strong>Weather Category:</strong> ${category}</div>`;
-        });
-
-        function solveMultiple() {
-            const input = document.getElementById("multipleInput").value.trim();
-            const lines = input.split("\n").filter(line => line.trim());
-            let output = "";
-            lines.forEach((line, index) => {
-                const [T, H, W] = line.split(",").map(Number);
-                if (isNaN(T) || isNaN(H) || isNaN(W)) {
-                    output += `<div class="error">Invalid input on line ${index + 1}: ${line}</div>`;
-                } else {
-                    const index = calculateWeatherIndex(T, H, W);
-                    const category = classifyWeather(index);
-                    output += `<div class="result">Set ${index + 1}: <strong>Weather Index:</strong> ${index.toFixed(2)}, <strong>Weather Category:</strong> ${category}</div>`;
-                }
-            });
-            document.getElementById("multipleResult").innerHTML = output;
-        }
-    </script>
-</body>
-</html>
+if __name__ == "__main__":
+    main()
